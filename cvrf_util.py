@@ -22,11 +22,14 @@ import urllib2
 import argparse
 from lxml import etree
 
+__revision__ = "1.0"
+
+
 class CVRF_Syntax(object):
     """
     CVRF Elements and Namespaces.
     """
-    NAMESPACES = {x.upper(): "{http://docs.oasis-open.org/csaf/ns/csaf-cvrf/v1.2}" % x for x in ("cvrf", "vuln", "prod")}
+    NAMESPACES = {x.upper(): "{http://docs.oasis-open.org/csaf/ns/csaf-cvrf/v1.2/%s}" % x for x in ("cvrf", "vuln", "prod")}
     CVRF_ARGS = ["all", "DocumentTitle", "DocumentType", "DocumentPublisher", "DocumentTracking", "DocumentNotes",
                  "DocumentDistribution", "AggregateSeverity", "DocumentReferences", "Acknowledgments"]
     VULN_ARGS = ["all", "Title", "ID", "Notes", "DiscoveryDate", "ReleaseDate", "Involvements", "CVE", "CWE",
@@ -41,6 +44,7 @@ class PrependerAction(argparse.Action):
     Customization for argparse. Prepends some static text to an accumalated list.
     """
     prepend_text = ""
+
     def __call__(self, parser, namespace, values, option_string=None):
         orig = getattr(namespace, self.dest, None)
         items = [] if orig is None else copy.copy(orig)
@@ -91,12 +95,12 @@ def print_node(node, strip_ns, f=sys.stdout):
     f: the file to print to (default is stdout)
     """
     if node.tag:
-        print >> f, "[%s]" %(chop_ns_prefix(node.tag) if strip_ns else node.tag),
+        print >> f, "[%s]" % (chop_ns_prefix(node.tag) if strip_ns else node.tag),
     if node.text:
         print >> f, node.text.strip()
     if node.attrib:
         for key in node.attrib:
-            print >> f, "(%s: %s)" %(key, node.attrib[key])
+            print >> f, "(%s: %s)" % (key, node.attrib[key])
         print >> f
 
 
@@ -140,6 +144,7 @@ def cvrf_dump(results, strip_ns):
         for item in results[key]:
             print_node(item, strip_ns, f)
         f.close()
+
 
 def cvrf_dispatch(cvrf_doc, parsables, collate_vuln, strip_ns):
     """
@@ -211,7 +216,7 @@ def post_process_arglist(arg, namespace, valid_args):
     return parsables
 
 
-def main(progname = None):
+def main(progname=None):
     progname = progname if progname else os.path.basename(sys.argv[0])
     parser = argparse.ArgumentParser(formatter_class=NonDupBracketFormatter,
                                      description="Validate/parse a CVRF 1.1 document and emit user-specified bits.")
@@ -285,7 +290,7 @@ def main(progname = None):
     cvrf_dispatch(cvrf_doc, parsables, collate_vuln=args.collate_vuln, strip_ns=args.strip_ns)
 
 if __name__ == "__main__":
-    progname=os.path.basename(sys.argv[0])
+    progname = os.path.basename(sys.argv[0])
     try:
         main(progname)
     except Exception, value:
