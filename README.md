@@ -11,3 +11,5 @@ http://docs.oasis-open.org/csaf/csaf-cvrf/v1.2/cs01/csaf-cvrf-v1.2-cs01.html
 
 ## Requirements: 
 * lxml  
+
+Note: The name of the default branch (serving github and gitlab users) is `default` :wink:
